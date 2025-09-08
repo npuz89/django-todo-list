@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l_nl3&fwfx-)1ys#8mtib5-wcr9ghki$dxvi(2yrs9&5gfn@dz'
+SECRET_KEY = os.environ.get('SECRET_KEY','django-insecure-l_nl3&fwfx-)1ys#8mtib5-wcr9ghki$dxvi(2yrs9&5gfn@dz')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'True' #True
@@ -83,9 +83,10 @@ DATABASES = {
 #     }
 
 'default': dj_database_url.config(
-    default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-    conn_max_age=600
-)
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600,
+        ssl_require=os.environ.get('DJANGO_DEBUG', '') != 'True'  # SSL для PostgreSQL в продакшене
+    )
 }
 
 
