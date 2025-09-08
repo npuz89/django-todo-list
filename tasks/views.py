@@ -24,6 +24,8 @@ def task_list(request):
     if search_query:
         tasks = tasks.filter(title__icontains=search_query)
 
+    tasks = tasks.order_by('-created_at')
+
     paginator = Paginator(tasks, 5) #разбивает список задач на страницы по 5 задач.
     page_number = request.GET.get('page') #получает номер страницы из URL (например, ?page=2).
     page_obj = paginator.get_page(page_number) #объект страницы, который передаём в шаблон.
