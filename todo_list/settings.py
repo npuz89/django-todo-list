@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l_nl3&fwfx-)1ys#8mtib5-wcr9ghki$dxvi(2yrs9&5gfn@dz'
+SECRET_KEY = os.environ.get('SECRET_KEY','django-insecure-l_nl3&fwfx-)1ys#8mtib5-wcr9ghki$dxvi(2yrs9&5gfn@dz')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'True' #True
@@ -76,17 +76,36 @@ WSGI_APPLICATION = 'todo_list.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
+# DATABASES = {
+# #     'default': {
+# #         'ENGINE': 'django.db.backends.sqlite3',
+# #         'NAME': BASE_DIR / 'db.sqlite3',
+# #     }
 
-'default': dj_database_url.config(
-    default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-    conn_max_age=600
-)
-}
+# 'default': dj_database_url.config(
+#         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+#         conn_max_age=600,
+#         ssl_require=os.environ.get('DJANGO_DEBUG', '') != 'True'  # SSL для PostgreSQL в продакшене
+#     )
+# }
+
+# Настройка базы данных
+if os.environ.get('DATABASE_URL'):
+    # Продакшен (Render, PostgreSQL)
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=os.environ.get('DJANGO_DEBUG', '') != 'True'
+        )
+    }
+else:
+    # Локально (SQLite)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
